@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebGIS Kuliner Khas Semarang</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* Layout map + sidebar */
+    #layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #map {
+      flex: 2;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    #sidebar {
+      flex: 1;
+      max-width: 420px;
+      min-width: 280px;
+      height: 100%;
+      border-left: 1px solid #ddd;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #fafafa;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ukuran tile Leaflet JANGAN diubah oleh aturan img global */
+    .leaflet-container img.leaflet-tile {
+      max-width: none !important;
+      max-height: none !important;
+      width: 256px !important;
+      height: 256px !important;
+      object-fit: none !important;
+    }
+
+    .leaflet-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    small { color: #555; }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      min-height: 50px;
+      resize: vertical;
+    }
+
+    #coordDisplay {
+      font-size: 0.8rem;
+      color: #444;
+      padding: 4px 6px;
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn + .btn { margin-left: 4px; }
+
+    #placeListWrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th, td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: left;
+      background: #f9fafb;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:hover { background: #f3f4f6; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #e0f2fe;
+      color: #0f172a;
+    }
+
+    .marker-highlight {
+      animation: pulse 0.9s ease-out 1;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      #layout { flex-direction: column; }
+      #map { height: 50vh; }
+      #sidebar {
+        max-width: 100%;
+        width: 100%;
+        height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="layout">
+    <div id="map"></div>
+
+    <div id="sidebar">
+      <div>
+        <h1>WebGIS Kuliner Khas Semarang</h1>
+        <small>👆 Klik peta untuk memilih lokasi kuliner, lalu isi form di bawah.</small>
+      </div>
+
+      <form id="placeForm">
+        <input type="hidden" id="placeId" />
+
+        <label for="name">Nama Kuliner / Tempat</label>
+        <input type="text" id="name" placeholder="Contoh: Tahu Gimbal Plampitan" required />
+
+        <label for="category">Kategori</label>
+        <select id="category">
+          <option value="Street Food">Street Food</option>
+          <option value="Rumah Makan">Rumah Makan</option>
+          <option value="Oleh-oleh">Oleh-oleh</option>
+          <option value="Cafe">Cafe</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+
+        <label for="description">Deskripsi Singkat</label>
+        <textarea id="description" placeholder="Contoh: Tahu gimbal khas Semarang dengan kuah kacang kental."></textarea>
+
+        <label>Koordinat (klik di peta)</label>
+        <div id="coordDisplay">Belum ada titik dipilih.</div>
+
+        <div style="margin-top: 6px;">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Simpan Titik</button>
+          <button type="button" class="btn btn-secondary" id="resetBtn">Bersihkan Form</button>
+        </div>
+      </form>
+
+      <div id="placeListWrapper">
+        <strong>Daftar Titik Kuliner</strong>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Kategori</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="placeTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-6.9932, 110.4203], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Bantu Leaflet kalau container flex / resize
+    setTimeout(() => map.invalidateSize(), 200);
+    window.addEventListener('resize', () => map.invalidateSize());
+
+    const STORAGE_KEY = 'semarangKulinerPoints';
+    let places = [];
+    let markers = {};
+    let selectedLatLng = null;
+    let tempMarker = null;
+    let isEditing = false;
+
+    const coordDisplay = document.getElementById('coordDisplay');
+    const placeForm = document.getElementById('placeForm');
+    const placeIdInput = document.getElementById('placeId');
+    const nameInput = document.getElementById('name');
+    const categoryInput = document.getElementById('category');
+    const descInput = document.getElementById('description');
+    const placeTableBody = document.getElementById('placeTableBody');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function loadPlaces() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const data = JSON.parse(raw);
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePlaces() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(places));
+    }
+
+    function generateId() {
+      return 'p_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    }
+
+    function createOrUpdateMarker(place) {
+      let marker = markers[place.id];
+
+      if (!marker) {
+        marker = L.marker([place.lat, place.lng], { draggable: true });
+        marker.addTo(map);
+        markers[place.id] = marker;
+
+        marker.on('dragend', (e) => {
+          const { lat, lng } = e.target.getLatLng();
+          place.lat = lat;
+          place.lng = lng;
+          savePlaces();
+          updateMarkerPopup(place);
+        });
+      } else {
+        marker.setLatLng([place.lat, place.lng]);
+      }
+
+      updateMarkerPopup(place);
+    }
+
+    function updateMarkerPopup(place) {
+      const marker = markers[place.id];
+      if (!marker) return;
+
+      const html = `
+        <strong>${place.name}</strong><br/>
+        <span class="badge">${place.category || '-'}</span><br/>
+        <small>${place.description || ''}</small><br/><br/>
+        <button class="popup-edit" data-id="${place.id}">Edit</button>
+        <button class="popup-delete" data-id="${place.id}">Hapus</button>
+      `;
+
+      marker.bindPopup(html);
+
+      marker.off('popupopen');
+      marker.on('popupopen', (e) => {
+        const popupEl = e.popup.getElement();
+        if (!popupEl) return;
+
+        const editBtn = popupEl.querySelector('.popup-edit');
+        const deleteBtn = popupEl.querySelector('.popup-delete');
+
+        if (editBtn) editBtn.addEventListener('click', () => startEdit(place.id));
+        if (deleteBtn) deleteBtn.addEventListener('click', () => deletePlace(place.id));
+      });
+    }
+
+    function renderTable() {
+      placeTableBody.innerHTML = '';
+
+      if (places.length === 0) {
+        placeTableBody.innerHTML =
+          '<tr><td colspan="3"><em>Belum ada titik kuliner.</em></td></tr>';
+        return;
+      }
+
+      places.forEach((place) => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.textContent = place.name;
+
+        const tdCat = document.createElement('td');
+        const spanCat = document.createElement('span');
+        spanCat.className = 'badge';
+        spanCat.textContent = place.category || '-';
+        tdCat.appendChild(spanCat);
+
+        const tdAction = document.createElement('td');
+
+        const btnFocus = document.createElement('button');
+        btnFocus.textContent = 'Lihat';
+        btnFocus.className = 'btn btn-secondary';
+        btnFocus.style.marginBottom = '2px';
+        btnFocus.onclick = () => focusPlace(place.id);
+
+        const btnEdit = document.createElement('button');
+        btnEdit.textContent = 'Edit';
+        btnEdit.className = 'btn btn-primary';
+        btnEdit.style.marginBottom = '2px';
+        btnEdit.onclick = () => startEdit(place.id);
+
+        const btnDelete = document.createElement('button');
+        btnDelete.textContent = 'Hapus';
+        btnDelete.className = 'btn btn-danger';
+        btnDelete.onclick = () => deletePlace(place.id);
+
+        tdAction.appendChild(btnFocus);
+        tdAction.appendChild(document.createElement('br'));
+        tdAction.appendChild(btnEdit);
+        tdAction.appendChild(document.createElement('br'));
+        tdAction.appendChild(btnDelete);
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdCat);
+        tr.appendChild(tdAction);
+        placeTableBody.appendChild(tr);
+      });
+    }
+
+    function focusPlace(id) {
+      const place = places.find(p => p.id === id);
+      const marker = markers[id];
+      if (!place || !marker) return;
+
+      map.setView([place.lat, place.lng], 17, { animate: true });
+      marker.openPopup();
+    }
+
+    placeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const category = categoryInput.value;
+      const description = descInput.value.trim();
+      const id = placeIdInput.value;
+
+      if (!name) {
+        alert('Nama kuliner wajib diisi.');
+        return;
+      }
+
+      if (!isEditing && !selectedLatLng) {
+        alert('Klik pada peta untuk memilih lokasi titik kuliner.');
+        return;
+      }
+
+      if (isEditing) {
+        const idx = places.findIndex(p => p.id === id);
+        if (idx === -1) return;
+
+        const place = places[idx];
+        place.name = name;
+        place.category = category;
+        place.description = description;
+
+        if (selectedLatLng) {
+          place.lat = selectedLatLng.lat;
+          place.lng = selectedLatLng.lng;
+        }
+
+        createOrUpdateMarker(place);
+      } else {
+        const newPlace = {
+          id: generateId(),
+          name,
+          category,
+          description,
+          lat: selectedLatLng.lat,
+          lng: selectedLatLng.lng
+        };
+        places.push(newPlace);
+        createOrUpdateMarker(newPlace);
+      }
+
+      savePlaces();
+      renderTable();
+      resetFormState();
+    });
+
+    function deletePlace(id) {
+      if (!confirm('Yakin ingin menghapus titik ini?')) return;
+
+      const idx = places.findIndex(p => p.id === id);
+      if (idx === -1) return;
+
+      places.splice(idx, 1);
+      savePlaces();
+
+      const marker = markers[id];
+      if (marker) {
+        map.removeLayer(marker);
+        delete markers[id];
+      }
+
+      renderTable();
+      resetFormState();
+    }
+
+    function startEdit(id) {
+      const place = places.find(p => p.id === id);
+      if (!place) return;
+
+      isEditing = true;
+      placeIdInput.value = place.id;
+      nameInput.value = place.name;
+      categoryInput.value = place.category || 'Lainnya';
+      descInput.value = place.description || '';
+      selectedLatLng = { lat: place.lat, lng: place.lng };
+
+      coordDisplay.textContent =
+        `${place.lat.toFixed(5)}, ${place.lng.toFixed(5)} (sedang diedit)`;
+      submitBtn.textContent = 'Simpan Perubahan';
+
+      if (tempMarker) map.removeLayer(tempMarker);
+      tempMarker = L.marker(selectedLatLng, { opacity: 0.5 }).addTo(map);
+
+      focusPlace(id);
+    }
+
+    function resetFormState() {
+      isEditing = false;
+      placeIdInput.value = '';
+      placeForm.reset();
+      categoryInput.value = 'Street Food';
+      coordDisplay.textContent = 'Belum ada titik dipilih.';
+      submitBtn.textContent = 'Simpan Titik';
+      selectedLatLng = null;
+
+      if (tempMarker) {
+        map.removeLayer(tempMarker);
+        tempMarker = null;
+      }
+    }
+
+    resetBtn.addEventListener('click', resetFormState);
+
+    map.on('click', (e) => {
+      selectedLatLng = e.latlng;
+      coordDisplay.textContent =
+        `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)} (siap disimpan)`;
+
+      if (tempMarker) map.removeLayer(tempMarker);
+      tempMarker = L.marker(selectedLatLng, { opacity: 0.5 }).addTo(map);
+    });
+
+    function init() {
+      places = loadPlaces();
+      places.forEach(createOrUpdateMarker);
+      renderTable();
+    }
+
+    init();
+  </script>
+</body>
+</html>
