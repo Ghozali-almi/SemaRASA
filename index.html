@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>SemaRASA – WebGIS Kuliner Khas Semarang</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- SEO dasar -->
+  <meta name="description" content="SemaRASA adalah WebGIS kuliner khas Semarang berbasis Leaflet dan OpenStreetMap. Temukan lumpia, tahu gimbal, wingko babat, dan kuliner legendaris lain melalui peta interaktif dengan filter kategori dan pencarian radius, dengan data tersimpan di basis data MySQL.">
+  <meta name="keywords" content="SemaRASA, WebGIS, kuliner Semarang, kuliner khas Semarang, peta kuliner, wisata kuliner, SIG, GIS, web mapping">
+  <meta name="author" content="SemaRASA Team">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#111827">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SemaRASA – WebGIS Kuliner Khas Semarang">
+  <meta property="og:description" content="Jelajahi kuliner khas Semarang lewat peta interaktif: filter kategori, radius dari lokasi Anda, dan integrasi Google Maps.">
+  <meta property="og:url" content="https://contoh-domain-semarasa.com/">
+  <meta property="og:image" content="https://contoh-domain-semarasa.com/cover-semarasa.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SemaRASA – WebGIS Kuliner Khas Semarang">
+  <meta name="twitter:description" content="Peta kuliner khas Semarang dengan filter kategori dan pencarian radius.">
+  <meta name="twitter:image" content="https://contoh-domain-semarasa.com/cover-semarasa.png">
+
+  <link rel="canonical" href="https://contoh-domain-semarasa.com/">
+
+  <!-- Structured Data sederhana -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SemaRASA",
+    "description": "WebGIS kuliner khas Semarang dengan peta interaktif, filter kategori, dan pencarian radius.",
+    "url": "https://contoh-domain-semarasa.com/",
+    "applicationCategory": "Food, Travel",
+    "creator": {
+      "@type": "Organization",
+      "name": "[Nama Universitas]"
+    }
+  }
+  </script>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="assets/css/index.css" />
+  
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo-icon">🍜</span>
+      <span>SemaRASA</span>
+      <span class="logo-text-small">WebGIS Kuliner Semarang</span>
+    </div>
+    <div class="nav-links" aria-label="Navigasi utama">
+      <a href="#home" class="active">Beranda</a>
+      <a href="about.html">Tentang</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-badge">
+            <span class="dot"></span>
+            <span>SemaRASA • WebGIS Kuliner Khas Semarang</span>
+          </div>
+          <h1 class="hero-title">
+            Jelajahi <span class="highlight">Kuliner Khas Semarang</span> Lewat Peta Interaktif
+          </h1>
+          <p class="hero-subtitle">
+            SemaRASA memetakan kuliner khas Semarang seperti lumpia, tahu gimbal, wingko babat,
+            bandeng presto, dan banyak lagi. Gunakan filter kategori dan pencarian radius
+            untuk menemukan kuliner terdekat dari posisi Anda.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#peta" class="btn-hero-primary">
+              Lihat Peta Kuliner
+            </a>
+            <a href="about.html" class="btn-hero-secondary">
+              Tentang Proyek
+            </a>
+          </div>
+
+          <div class="hero-meta">
+            Data kuliner tersimpan di basis data MySQL · Dibangun dengan Leaflet &amp; OpenStreetMap · Untuk pembelajaran Sistem Informasi Geografis
+          </div>
+        </div>
+
+        <div class="hero-highlight-card" aria-label="Ringkasan statistik SemaRASA">
+          <div class="hero-highlight-title">Ringkasan SemaRASA</div>
+          <div class="hero-highlight-sub">
+            Statistik akan otomatis menyesuaikan dengan data kuliner pada peta.
+          </div>
+          <div class="hero-highlight-grid">
+            <div class="hero-highlight-item">
+              <div class="hero-highlight-value" id="totalPlacesHero">—</div>
+              <div class="hero-highlight-label">Total Lokasi</div>
+            </div>
+            <div class="hero-highlight-item">
+              <div class="hero-highlight-value" id="streetCountHero">—</div>
+              <div class="hero-highlight-label">Street Food</div>
+            </div>
+            <div class="hero-highlight-item">
+              <div class="hero-highlight-value" id="olehCountHero">—</div>
+              <div class="hero-highlight-label">Tempat Oleh-oleh</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFO SINGKAT -->
+    <section class="section-info" aria-label="Ikhtisar fitur SemaRASA">
+      <div class="section-info-inner">
+        <article class="info-card">
+          <h2 class="info-card-title">
+            <span class="info-card-icon">🗺️</span> WebGIS Interaktif
+          </h2>
+          <p>
+            Peta kuliner khas Semarang berbasis Leaflet dan OpenStreetMap.
+            Setiap titik dapat diperbesar, digeser, dan diklik untuk melihat informasi detail lokasi.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2 class="info-card-title">
+            <span class="info-card-icon">🎯</span> Filter &amp; Pencarian Radius
+          </h2>
+          <p>
+            Filter lokasi berdasarkan kategori (street food, resto, oleh-oleh)
+            dan gunakan radius dari titik tertentu atau dari lokasi Anda untuk fokus pada area tertentu.
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h2 class="info-card-title">
+            <span class="info-card-icon">👨‍💻</span> Mode Admin Terpisah
+          </h2>
+          <p>
+            Pengelolaan data kuliner dilakukan melalui halaman <strong>Admin</strong>,
+            sehingga tampilan pengguna tetap bersih dan aman tanpa akses CRUD langsung.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- MAP SECTION -->
+    <section class="map-section" id="peta" aria-label="Peta kuliner SemaRASA">
+      <div class="map-section-inner">
+        <div class="map-section-header">
+          <div>
+            <h2>Peta Kuliner Khas Semarang</h2>
+            <p>
+              Klik pada peta untuk menentukan titik pusat, gunakan fitur
+              <em>Gunakan Lokasi Saya</em> untuk mendeteksi posisi Anda,
+              lalu atur jarak radius untuk menemukan kuliner di sekitar.
+            </p>
+          </div>
+        </div>
+
+        <div id="layout">
+          <div id="map"></div>
+
+          <aside id="sidebar">
+            <!-- Header di sidebar -->
+            <div class="sidebar-section">
+              <h1>SemaRASA – Kuliner Semarang</h1>
+              <small>Peta kuliner khas Semarang dengan filter kategori dan pencarian radius.</small>
+              
+              <div class="stats-grid" aria-label="Statistik lokasi kuliner">
+                <div class="stat-card">
+                  <div class="stat-value" id="totalPlaces">0</div>
+                  <div class="stat-label">Total Lokasi</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="visiblePlaces">0</div>
+                  <div class="stat-label">Ditampilkan</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="inRadius">-</div>
+                  <div class="stat-label">Dalam Radius</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar Explore -->
+            <div class="sidebar-section">
+              <div class="tabs">
+                <button class="tab active" data-tab="explore">Jelajah</button>
+              </div>
+
+              <div class="tab-content active" id="tab-explore">
+                <!-- Filter Kategori -->
+                <div class="filter-group">
+                  <label>Filter Kategori</label>
+                  <div class="checkbox-group">
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="Street Food" checked>
+                      <span>🍢 Street Food</span>
+                      <span class="count" data-category="Street Food">0</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="Resto" checked>
+                      <span>🍽️ Resto / Rumah Makan</span>
+                      <span class="count" data-category="Resto">0</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" value="Oleh-oleh" checked>
+                      <span>🎁 Tempat Oleh-oleh</span>
+                      <span class="count" data-category="Oleh-oleh">0</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Radius -->
+                <div class="filter-group">
+                  <label>Pencarian Radius</label>
+                  <div class="radius-controls">
+                    <button class="btn btn-success btn-block" id="useMyLocation">📍 Gunakan Lokasi Saya</button>
+                    <small style="text-align: center; color: #6b7280;">atau klik di peta untuk memilih titik pusat</small>
+                    
+                    <div class="radius-slider">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.85rem;">Jarak Radius:</span>
+                        <span class="radius-value" id="radiusValue">0.25 km</span>
+                      </div>
+                      <input type="range" id="radiusSlider" min="0.25" max="2" step="0.25" value="0.25">
+                    </div>
+
+                    <div style="display: flex; gap: 6px;">
+                      <button class="btn btn-primary" id="applyRadius" style="flex: 1;">Terapkan Radius</button>
+                      <button class="btn btn-secondary" id="clearRadius">Hapus</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Daftar Lokasi -->
+                <div class="filter-group">
+                  <label>Daftar Lokasi (<span id="placeCount">0</span>)</label>
+                  <div class="place-list" id="placeList"></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SemaRASA – WebGIS Kuliner Khas Semarang · SIG / Universitas Negeri Semarang · 2025
+  </footer>
+
+  <!-- JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="assets/js/map.js"></script>
+  <script>
+    // Sinkronkan statistik hero dengan data di sidebar (setelah map.js jalan)
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const totalEl       = document.getElementById('totalPlaces');
+        const streetCountEl = document.querySelector('.count[data-category="Street Food"]');
+        const olehCountEl   = document.querySelector('.count[data-category="Oleh-oleh"]');
+
+        const heroTotal  = document.getElementById('totalPlacesHero');
+        const heroStreet = document.getElementById('streetCountHero');
+        const heroOleh   = document.getElementById('olehCountHero');
+
+        if (heroTotal && totalEl)         heroTotal.textContent  = totalEl.textContent || '0';
+        if (heroStreet && streetCountEl)  heroStreet.textContent = streetCountEl.textContent || '0';
+        if (heroOleh && olehCountEl)      heroOleh.textContent   = olehCountEl.textContent || '0';
+      }, 400);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f9fafb;
+    color: #111827;
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* NAVBAR – sama gaya dengan index.html */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(17, 24, 39, 0.97);
+    backdrop-filter: blur(10px);
+    color: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.25rem;
+    box-shadow: 0 1px 8px rgba(15, 23, 42, 0.4);
+}
+
+.navbar-brand {
+    font-weight: 650;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-brand span.logo-icon {
+    font-size: 1.25rem;
+}
+
+.navbar-brand span.logo-text-small {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #9ca3af;
+}
+
+.nav-links {
+    display: flex;
+    gap: 12px;
+}
+
+.nav-links a {
+    font-size: 0.85rem;
+    color: #e5e7eb;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.nav-links a:hover {
+    background: #374151;
+    transform: translateY(-1px);
+}
+
+.nav-links a.active {
+    background: #2563eb;
+    color: #f9fafb;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* HERO / HEADER ABOUT */
+.about-hero {
+    padding: 2.8rem 1.25rem 2.4rem;
+    background:
+    radial-gradient(circle at top left, #2563eb1a, transparent 60%),
+    radial-gradient(circle at bottom right, #f973161a, transparent 55%),
+    linear-gradient(135deg, #f9fafb 0%, #eff6ff 50%, #f9fafb 100%);
+}
+
+.about-hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.about-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #075985;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+}
+
+.about-badge span.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #22c55e;
+}
+
+.about-title {
+    font-size: clamp(1.7rem, 2.6vw, 2.1rem);
+    font-weight: 750;
+    letter-spacing: -0.03em;
+    color: #020617;
+    margin: 0 0 8px 0;
+}
+
+.about-subtitle {
+    font-size: 0.95rem;
+    color: #4b5563;
+    line-height: 1.8;
+    margin: 0 0 14px 0;
+    max-width: 720px;
+}
+
+.about-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* CONTENT WRAPPER */
+.about-content {
+    padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.about-content-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+    gap: 24px;
+}
+
+.about-main {
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.8;
+}
+
+.about-main section {
+    margin-bottom: 1.6rem;
+}
+
+.about-main h2 {
+    font-size: 1rem;
+    margin: 0 0 6px 0;
+    color: #111827;
+}
+
+.about-main p {
+    margin: 0.25rem 0 0.3rem;
+}
+
+.about-main ul {
+    margin: 0.3rem 0 0.5rem;
+    padding-left: 1.25rem;
+}
+
+.about-main li {
+    margin-bottom: 0.25rem;
+}
+
+.about-aside {
+    font-size: 0.85rem;
+    color: #4b5563;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.aside-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px 14px 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.aside-card h3 {
+    font-size: 0.9rem;
+    margin: 0 0 6px;
+    color: #111827;
+}
+
+.aside-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.badge-pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.75rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+footer {
+    padding: 12px 16px 16px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+@media (max-width: 900px) {
+    .about-content-inner {
+    grid-template-columns: minmax(0, 1fr);
+    }
+}

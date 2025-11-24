@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>SemaRASA – Admin Data Kuliner Semarang</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- SEO: admin tidak perlu diindex -->
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Panel admin SemaRASA untuk mengelola data titik kuliner khas Semarang pada peta WebGIS.">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="logo-icon">🍜</span>
+      <span>SemaRASA</span>
+      <small>Admin Data Kuliner</small>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="about.html">Tentang</a>
+      <a href="admin.html" class="active">Admin</a>
+    </div>
+  </nav>
+
+  <!-- LAYOUT: MAP + SIDEBAR -->
+  <div id="layout">
+    <div id="map"></div>
+
+    <aside id="sidebar">
+      <div class="section">
+        <h1>Kelola Data Kuliner</h1>
+        <p class="small">Klik pada peta untuk memilih koordinat, lalu isi form di bawah untuk menyimpan atau mengubah lokasi kuliner.</p>
+        <p class="stat">Total lokasi tersimpan: <span id="totalPlaces">0</span></p>
+      </div>
+
+      <div class="section">
+        <form id="placeForm">
+          <input type="hidden" id="placeId">
+
+          <div class="form-group">
+            <label>Nama Tempat *</label>
+            <input type="text" id="name" placeholder="Contoh: Tahu Gimbal Plampitan" required>
+          </div>
+
+          <div class="form-group">
+            <label>Kategori *</label>
+            <select id="category" required>
+              <option value="Street Food">Street Food</option>
+              <option value="Resto">Resto / Rumah Makan</option>
+              <option value="Oleh-oleh">Tempat Oleh-oleh</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Deskripsi</label>
+            <textarea id="description" placeholder="Deskripsi singkat tentang tempat ini..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Menu Khas</label>
+              <input type="text" id="menu" placeholder="Contoh: Tahu Gimbal">
+            </div>
+
+            <div class="form-group">
+              <label>Harga Rata-rata</label>
+              <input type="text" id="price" placeholder="Contoh: Rp 15.000">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Alamat</label>
+            <input type="text" id="address" placeholder="Jalan, Kelurahan, Kecamatan">
+          </div>
+
+          <div class="form-group">
+            <label>Jam Buka</label>
+            <input type="text" id="hours" placeholder="Contoh: 08.00 - 17.00 WIB">
+          </div>
+
+          <div class="form-group">
+            <label>URL Foto (opsional)</label>
+            <input type="text" id="photo" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>Koordinat</label>
+            <div id="coordDisplay">Klik pada peta untuk memilih lokasi</div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button type="submit" class="btn btn-primary" id="submitBtn" style="flex:1;">Simpan Lokasi</button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:0.9rem; font-weight:600;">Daftar Lokasi</span>
+          <!-- <button class="btn btn-secondary btn-small" id="loadSampleData" style="font-size:0.75rem;">Muat Data Contoh</button> -->
+        </div>
+        <div id="placeList"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Leaflet JS & Admin Logic -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>
