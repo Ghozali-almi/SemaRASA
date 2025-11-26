@@ -5,30 +5,12 @@
   <title>SemaRASA – Admin Data Kuliner Semarang</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-  <!-- SEO: admin tidak perlu diindex -->
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Panel admin SemaRASA untuk mengelola data titik kuliner khas Semarang pada peta WebGIS.">
-
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="assets/css/admin.css" />
   
 </head>
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <span class="logo-icon">🍜</span>
-      <span>SemaRASA</span>
-      <small>Admin Data Kuliner</small>
-    </div>
-    <div class="nav-links">
-      <a href="index.html">Beranda</a>
-      <a href="about.html">Tentang</a>
-      <a href="admin.html" class="active">Admin</a>
-    </div>
-  </nav>
-
   <!-- LAYOUT: MAP + SIDEBAR -->
   <div id="layout">
     <div id="map"></div>
@@ -91,6 +73,11 @@
           </div>
 
           <div class="form-group">
+              <label>URL Google Maps</label>
+              <input type="text" id="url_gmaps" placeholder="https://maps.google.com/...">
+          </div>
+
+          <div class="form-group">
             <label>Koordinat</label>
             <div id="coordDisplay">Klik pada peta untuk memilih lokasi</div>
           </div>
@@ -105,8 +92,6 @@
       <div class="section">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <span style="font-size:0.9rem; font-weight:600;">Daftar Lokasi</span>
-          <!-- <button class="btn btn-secondary btn-small" id="loadSampleData" style="font-size:0.75rem;">Muat Data Contoh</button> -->
-        </div>
         <div id="placeList"></div>
       </div>
     </aside>

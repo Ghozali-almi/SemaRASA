@@ -17,6 +17,7 @@ let markers = {};
 let selectedLatLng = null;
 let radiusCircle = null;
 let radiusCenter = null;
+let centerMarker = null;
 
 const activeCategories = new Set(['Street Food', 'Resto', 'Oleh-oleh']);
 
@@ -34,6 +35,7 @@ const inRadiusEl = document.getElementById('inRadius');
 const placeCountEl = document.getElementById('placeCount');
 
 // ===== Utilitas =====
+// Hitung jarak antara dua koordinat (km) menggunakan rumus Haversine
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -110,13 +112,27 @@ function updateMarkerPopup(place) {
     ? `<img src="${place.photo}" class="popup-image" onerror="this.style.display='none'">`
     : '';
 
+  // Deskripsi dengan toggle Selengkapnya
+  const fullDesc = (place.description || '').trim();
+  const limit = 80;
+  const isLong = fullDesc.length > limit;
+  const shortDesc = isLong ? fullDesc.slice(0, limit) + '…' : fullDesc;
+  const descHtml = fullDesc
+    ? `<div class="popup-desc">
+         <span class="desc-short">${shortDesc}</span>
+         <span class="desc-full" style="display:none;">${fullDesc}</span>
+         ${isLong ? `<button class="popup-readmore" style="background:none;border:none;color:#2563eb;cursor:pointer;padding:0;margin-top:6px;text-decoration:underline;">Selengkapnya</button>` : ''}
+       </div><br>`
+    : '';
+
   const menu = place.menu ? `<strong>Menu:</strong> ${place.menu}<br>` : '';
   const price = place.price ? `<strong>Harga:</strong> ${place.price}<br>` : '';
   const address = place.address ? `<strong>Alamat:</strong> ${place.address}<br>` : '';
   const hours = place.hours ? `<strong>Jam Buka:</strong> ${place.hours}<br>` : '';
-  const desc = place.description ? `${place.description}<br><br>` : '';
 
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
+  const googleMapsUrl = place.url_gmaps
+    ? place.url_gmaps
+    : `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`;
 
   const html = `
     <div class="custom-popup">
@@ -124,7 +140,7 @@ function updateMarkerPopup(place) {
       <div class="popup-title">${place.name}</div>
       <span class="popup-category ${getCategoryClass(place.category)}">${place.category}</span>
       <div class="popup-info">
-        ${desc}
+        ${descHtml}
         ${menu}
         ${price}
         ${address}
@@ -137,6 +153,25 @@ function updateMarkerPopup(place) {
   `;
 
   marker.bindPopup(html, { maxWidth: 300 });
+
+  // Pasang handler toggle pada saat popup dibuka
+  marker.off('popupopen');
+  marker.on('popupopen', e => {
+    const popupEl = e.popup.getElement();
+    if (!popupEl) return;
+    const readMoreBtn = popupEl.querySelector('.popup-readmore');
+    const shortSpan = popupEl.querySelector('.desc-short');
+    const fullSpan = popupEl.querySelector('.desc-full');
+    if (!readMoreBtn || !shortSpan || !fullSpan) return;
+
+    let expanded = false;
+    readMoreBtn.addEventListener('click', () => {
+      expanded = !expanded;
+      shortSpan.style.display = expanded ? 'none' : '';
+      fullSpan.style.display = expanded ? '' : 'none';
+      readMoreBtn.textContent = expanded ? 'Tutup' : 'Selengkapnya';
+    });
+  });
 }
 
 function applyMarkerVisibility(place) {
@@ -164,6 +199,7 @@ function applyMarkerVisibility(place) {
 }
 
 // ===== Sidebar list =====
+// Render daftar lokasi di sidebar sesuai filter dan urutan (jarak atau nama)
 function renderPlaceList() {
   if (!placeList) return;
   placeList.innerHTML = '';
@@ -231,6 +267,7 @@ function renderPlaceList() {
   if (placeCountEl) placeCountEl.textContent = filtered.length;
 }
 
+// Sorot item daftar berdasarkan id lokasi dan gulir jika perlu
 function highlightPlaceInList(placeId) {
   if (!placeList) return;
   document.querySelectorAll('.place-item').forEach(item => {
@@ -243,6 +280,7 @@ function highlightPlaceInList(placeId) {
   }
 }
 
+// Fokus peta ke lokasi dengan memperbesar zoom dan membuka popup
 function focusPlace(id) {
   const place = places.find(p => p.id == id);
   const marker = markers[id];
@@ -254,20 +292,19 @@ function focusPlace(id) {
 }
 
 // ===== Statistik =====
+// Perbarui statistik total, jumlah terlihat, per kategori, dan dalam radius
 function updateStats() {
+  if (totalPlacesEl) totalPlacesEl.textContent = places.length;
+
+  const visibleCount = places.filter(p => activeCategories.has(p.category)).length;
+  if (visiblePlacesEl) visiblePlacesEl.textContent = visibleCount;
+
   const categoryCounts = { 'Street Food': 0, Resto: 0, 'Oleh-oleh': 0 };
   places.forEach(place => {
     if (categoryCounts.hasOwnProperty(place.category)) {
       categoryCounts[place.category]++;
     }
   });
-  
-  if (totalPlacesEl) totalPlacesEl.textContent = places.length;
-
-  const visibleCount = places.filter(p => activeCategories.has(p.category)).length;
-  if (visiblePlacesEl) visiblePlacesEl.textContent = visibleCount;
-
-  
 
   document.querySelectorAll('.count').forEach(el => {
     const category = el.dataset.category;
@@ -288,6 +325,7 @@ function updateStats() {
 }
 
 // ===== Filter kategori =====
+// Pasang event listener pada checkbox kategori untuk memperbarui tampilan
 document
   .querySelectorAll('.checkbox-item input[type="checkbox"]')
   .forEach(checkbox => {
@@ -305,6 +343,7 @@ document
   });
 
 // ===== Radius slider =====
+// Tampilkan nilai radius saat slider digeser
 if (radiusSlider && radiusValue) {
   radiusSlider.addEventListener('input', e => {
     radiusValue.textContent = `${e.target.value} km`;
@@ -312,6 +351,7 @@ if (radiusSlider && radiusValue) {
 }
 
 // ===== Tombol apply radius =====
+// Terapkan pencarian radius: gambar lingkaran dan filter lokasi di dalamnya
 if (applyRadiusBtn) {
   applyRadiusBtn.addEventListener('click', () => {
     if (!radiusSlider) return;
@@ -353,6 +393,11 @@ if (clearRadiusBtn) {
       radiusCircle = null;
     }
     radiusCenter = null;
+    if (centerMarker) {
+      map.removeLayer(centerMarker);
+      centerMarker = null;
+    }
+    selectedLatLng = null;
     places.forEach(applyMarkerVisibility);
     renderPlaceList();
     updateStats();
@@ -377,8 +422,11 @@ if (useMyLocationBtn) {
           lng: position.coords.longitude
         };
 
-        L.marker(selectedLatLng, {
-          opacity: 0.7,
+        if (centerMarker) {
+          map.removeLayer(centerMarker);
+        }
+        centerMarker = L.marker(selectedLatLng, {
+          opacity: 0.85,
           icon: L.divIcon({
             html: '📍',
             className: '',
@@ -408,9 +456,22 @@ if (useMyLocationBtn) {
 // ===== Klik peta (hanya untuk radius center di user mode) =====
 map.on('click', e => {
   selectedLatLng = e.latlng;
+  if (centerMarker) {
+    map.removeLayer(centerMarker);
+  }
+  centerMarker = L.marker(selectedLatLng, {
+    opacity: 0.85,
+    icon: L.divIcon({
+      html: '📍',
+      className: '',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    })
+  }).addTo(map);
 });
 
-// ===== Init: load data dari API =====
+// ===== Inisialisasi =====
+// Ambil semua lokasi dari API, buat marker, render daftar, dan update statistik
 async function init() {
   try {
     const data = await PlacesAPI.getAll();

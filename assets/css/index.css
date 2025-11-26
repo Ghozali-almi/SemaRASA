@@ -208,6 +208,32 @@ main {
     color: #9ca3af;
 }
 
+/* Total penuh di atas */
+.hero-total {
+    margin-top: 12px;
+    background: linear-gradient(135deg, #1e293b 0%, #0ea5e9 100%);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+.hero-total-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+.hero-total-label {
+    font-size: 0.8rem;
+    color: #d1d5db;
+}
+
+/* Grid kategori di bawah total */
+.hero-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
 .hero-highlight-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

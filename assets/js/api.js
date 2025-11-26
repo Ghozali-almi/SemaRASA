@@ -1,6 +1,6 @@
 // assets/js/api.js
 
-const API_URL = '/semarasa/api/places.php'; 
+const API_URL = 'api/places.php';
 
 export const PlacesAPI = {
   async getAll() {

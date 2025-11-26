@@ -13,6 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once __DIR__ . '/../config/db.php';
 
 $pdo    = getPDO();
+
+// Memastikan skema tersedia agar SELECT tidak gagal saat tabel belum ada
+ensureSchema($pdo);
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
@@ -22,6 +26,31 @@ if ($method === 'GET') {
 } else {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
+}
+
+//   Membuat tabel "places" jika belum ada.
+ 
+function ensureSchema(PDO $pdo)
+{
+    $sql = "
+    CREATE TABLE IF NOT EXISTS places (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        category VARCHAR(50) NOT NULL,
+        description TEXT NULL,
+        menu VARCHAR(255) NULL,
+        price VARCHAR(100) NULL,
+        address VARCHAR(255) NULL,
+        hours VARCHAR(100) NULL,
+        photo VARCHAR(255) NULL,
+        url_gmaps VARCHAR(255) NULL,
+        lat DECIMAL(9,6) NOT NULL,
+        lng DECIMAL(9,6) NOT NULL,
+        INDEX idx_category(category)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ";
+
+    $pdo->exec($sql);
 }
 
 /**
@@ -97,8 +126,8 @@ function createPlace(PDO $pdo, array $data)
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO places (name, category, description, menu, price, address, hours, photo, lat, lng)
-        VALUES (:name, :category, :description, :menu, :price, :address, :hours, :photo, :lat, :lng)
+        INSERT INTO places (name, category, description, menu, price, address, hours, photo, url_gmaps, lat, lng)
+        VALUES (:name, :category, :description, :menu, :price, :address, :hours, :photo, :url_gmaps, :lat, :lng)
     ");
 
     $stmt->execute([
@@ -110,8 +139,10 @@ function createPlace(PDO $pdo, array $data)
         ':address'     => $data['address'] ?? null,
         ':hours'       => $data['hours'] ?? null,
         ':photo'       => $data['photo'] ?? null,
+        ':url_gmaps' => $data['url_gmaps'] ?? null,
         ':lat'         => $data['lat'],
         ':lng'         => $data['lng'],
+
     ]);
 
     $id = $pdo->lastInsertId();
@@ -146,6 +177,7 @@ function updatePlace(PDO $pdo, array $data)
             address = :address,
             hours = :hours,
             photo = :photo,
+            url_gmaps = :url_gmaps,
             lat = :lat,
             lng = :lng
         WHERE id = :id
@@ -161,6 +193,7 @@ function updatePlace(PDO $pdo, array $data)
         ':address'     => $data['address'] ?? null,
         ':hours'       => $data['hours'] ?? null,
         ':photo'       => $data['photo'] ?? null,
+        ':url_gmaps' => $data['url_gmaps'] ?? null,
         ':lat'         => $data['lat'] ?? 0,
         ':lng'         => $data['lng'] ?? 0,
     ]);

@@ -5,43 +5,6 @@
   <title>SemaRASA – WebGIS Kuliner Khas Semarang</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-  <!-- SEO dasar -->
-  <meta name="description" content="SemaRASA adalah WebGIS kuliner khas Semarang berbasis Leaflet dan OpenStreetMap. Temukan lumpia, tahu gimbal, wingko babat, dan kuliner legendaris lain melalui peta interaktif dengan filter kategori dan pencarian radius, dengan data tersimpan di basis data MySQL.">
-  <meta name="keywords" content="SemaRASA, WebGIS, kuliner Semarang, kuliner khas Semarang, peta kuliner, wisata kuliner, SIG, GIS, web mapping">
-  <meta name="author" content="SemaRASA Team">
-  <meta name="robots" content="index,follow">
-  <meta name="theme-color" content="#111827">
-
-  <!-- Open Graph / Social -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="SemaRASA – WebGIS Kuliner Khas Semarang">
-  <meta property="og:description" content="Jelajahi kuliner khas Semarang lewat peta interaktif: filter kategori, radius dari lokasi Anda, dan integrasi Google Maps.">
-  <meta property="og:url" content="https://contoh-domain-semarasa.com/">
-  <meta property="og:image" content="https://contoh-domain-semarasa.com/cover-semarasa.png">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SemaRASA – WebGIS Kuliner Khas Semarang">
-  <meta name="twitter:description" content="Peta kuliner khas Semarang dengan filter kategori dan pencarian radius.">
-  <meta name="twitter:image" content="https://contoh-domain-semarasa.com/cover-semarasa.png">
-
-  <link rel="canonical" href="https://contoh-domain-semarasa.com/">
-
-  <!-- Structured Data sederhana -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "SemaRASA",
-    "description": "WebGIS kuliner khas Semarang dengan peta interaktif, filter kategori, dan pencarian radius.",
-    "url": "https://contoh-domain-semarasa.com/",
-    "applicationCategory": "Food, Travel",
-    "creator": {
-      "@type": "Organization",
-      "name": "[Nama Universitas]"
-    }
-  }
-  </script>
-
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="assets/css/index.css" />
@@ -98,14 +61,22 @@
           <div class="hero-highlight-sub">
             Statistik akan otomatis menyesuaikan dengan data kuliner pada peta.
           </div>
-          <div class="hero-highlight-grid">
-            <div class="hero-highlight-item">
-              <div class="hero-highlight-value" id="totalPlacesHero">—</div>
-              <div class="hero-highlight-label">Total Lokasi</div>
-            </div>
+          
+          <!-- Total di barisan atas, penuh, warna berbeda -->
+          <div class="hero-total">
+            <div class="hero-total-value" id="totalPlacesHero">—</div>
+            <div class="hero-total-label">Total Lokasi</div>
+          </div>
+
+          <!-- Tiga kategori di bawahnya -->
+          <div class="hero-categories-grid">
             <div class="hero-highlight-item">
               <div class="hero-highlight-value" id="streetCountHero">—</div>
               <div class="hero-highlight-label">Street Food</div>
+            </div>
+            <div class="hero-highlight-item">
+              <div class="hero-highlight-value" id="restoCountHero">—</div>
+              <div class="hero-highlight-label">Resto</div>
             </div>
             <div class="hero-highlight-item">
               <div class="hero-highlight-value" id="olehCountHero">—</div>
@@ -267,14 +238,17 @@
       setTimeout(() => {
         const totalEl       = document.getElementById('totalPlaces');
         const streetCountEl = document.querySelector('.count[data-category="Street Food"]');
+        const restoCountEl  = document.querySelector('.count[data-category="Resto"]');
         const olehCountEl   = document.querySelector('.count[data-category="Oleh-oleh"]');
 
         const heroTotal  = document.getElementById('totalPlacesHero');
         const heroStreet = document.getElementById('streetCountHero');
+        const heroResto  = document.getElementById('restoCountHero');
         const heroOleh   = document.getElementById('olehCountHero');
 
         if (heroTotal && totalEl)         heroTotal.textContent  = totalEl.textContent || '0';
         if (heroStreet && streetCountEl)  heroStreet.textContent = streetCountEl.textContent || '0';
+        if (heroResto && restoCountEl)    heroResto.textContent  = restoCountEl.textContent || '0';
         if (heroOleh && olehCountEl)      heroOleh.textContent   = olehCountEl.textContent || '0';
       }, 400);
     });

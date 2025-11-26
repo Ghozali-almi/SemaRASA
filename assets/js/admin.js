@@ -30,6 +30,7 @@ const priceInput = document.getElementById('price');
 const addressInput = document.getElementById('address');
 const hoursInput = document.getElementById('hours');
 const photoInput = document.getElementById('photo');
+const urlGmapsInput = document.getElementById('url_gmaps');
 const coordDisplay = document.getElementById('coordDisplay');
 const placeList = document.getElementById('placeList');
 const totalPlacesEl = document.getElementById('totalPlaces');
@@ -218,6 +219,7 @@ placeForm.addEventListener('submit', async e => {
     address: addressInput.value.trim(),
     hours: hoursInput.value.trim(),
     photo: photoInput.value.trim(),
+    url_gmaps: urlGmapsInput.value.trim(),
     lat: selectedLatLng ? selectedLatLng.lat : undefined,
     lng: selectedLatLng ? selectedLatLng.lng : undefined
   };
@@ -275,6 +277,7 @@ function startEdit(id) {
   addressInput.value = place.address || '';
   hoursInput.value = place.hours || '';
   photoInput.value = place.photo || '';
+  urlGmapsInput.value = place.url_gmaps || '';
   selectedLatLng = { lat: Number(place.lat), lng: Number(place.lng) };
 
   coordDisplay.textContent = `${place.lat.toFixed(5)}, ${place.lng.toFixed(
